@@ -1,14 +1,15 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.shortcuts import render
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from app_run.models import Run
+from app_run.pagination import RunPagination, UserPagination
 from app_run.serializer import RunSerializer, UserSerializer
 
 User = get_user_model()
@@ -27,13 +28,19 @@ def company_detail(request):
 class RunModelViewSet(viewsets.ModelViewSet):
     queryset = Run.objects.select_related('athlete').all()
     serializer_class = RunSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ['athlete', 'status']
+    ordering_fields = ['created_at',]
+    pagination_class = RunPagination
 
 
 class UserReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.filter(is_superuser=False)
     serializer_class = UserSerializer
-    filter_backends = [SearchFilter]
+    filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['first_name', 'last_name']
+    ordering_fields = ['date_joined',]
+    pagination_class = UserPagination
 
     def get_queryset(self):
         qs = self.queryset
