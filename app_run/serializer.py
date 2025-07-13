@@ -6,11 +6,17 @@ from app_run.models import Run
 User = get_user_model()
 
 
+class AthleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'last_name', 'first_name',]
+
+
 class RunSerializer(serializers.ModelSerializer):
+    athlete_data = AthleteSerializer(read_only=True, source='athlete')
     class Meta:
         model = Run
         fields = '__all__'
-
 
 class UserSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField()

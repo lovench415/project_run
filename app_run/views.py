@@ -21,7 +21,7 @@ def company_detail(request):
 
 
 class RunModelViewSet(viewsets.ModelViewSet):
-    queryset = Run.objects.all()
+    queryset = Run.objects.select_related('athlete').all()
     serializer_class = RunSerializer
 
 
