@@ -49,8 +49,8 @@ class StartRunAPIView(APIView):
     def post(self, request, run_id):
         qs = Run.objects.select_related('athlete').all()
         obj_run = get_object_or_404(qs, id=run_id)
-        if obj_run.status == 'INIT':
-            obj_run.status = 'IN_PROGRESS'
+        if obj_run.status == 'init':
+            obj_run.status = 'in_progress'
             obj_run.save()
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -60,8 +60,8 @@ class StopRunAPIView(APIView):
     def post(self, request, run_id):
         qs = Run.objects.select_related('athlete').all()
         obj_run = get_object_or_404(qs, id=run_id)
-        if obj_run.status == 'IN_PROGRESS':
-            obj_run.status = 'FINISHED'
+        if obj_run.status == 'in_progress':
+            obj_run.status = 'finished'
             obj_run.save()
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
