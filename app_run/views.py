@@ -1,15 +1,18 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.filters import SearchFilter
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from app_run.models import Run
 from app_run.serializer import RunSerializer, UserSerializer
 
 User = get_user_model()
+
 
 @api_view(['GET'])
 def company_detail(request):
@@ -40,3 +43,25 @@ class UserReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
         elif param_type is not None and param_type == 'coach':
             qs = qs.filter(is_staff=True)
         return qs
+
+
+class StartRunAPIView(APIView):
+    def post(self, request, run_id):
+        qs = Run.objects.select_related('athlete').all()
+        obj_run = get_object_or_404(qs, id=run_id)
+        if obj_run.status == 'INIT':
+            obj_run.status = 'IN_PROGRESS'
+            obj_run.save()
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class StopRunAPIView(APIView):
+    def post(self, request, run_id):
+        qs = Run.objects.select_related('athlete').all()
+        obj_run = get_object_or_404(qs, id=run_id)
+        if obj_run.status == 'IN_PROGRESS':
+            obj_run.status = 'FINISHED'
+            obj_run.save()
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
