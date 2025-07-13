@@ -52,8 +52,8 @@ class StartRunAPIView(APIView):
         if obj_run.status == 'init':
             obj_run.status = 'in_progress'
             obj_run.save()
-            return Response(status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "GET запрос обработан"}, status=status.HTTP_201_CREATED)
+        return Response({"message": "GET запрос не обработан"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class StopRunAPIView(APIView):
@@ -63,5 +63,5 @@ class StopRunAPIView(APIView):
         if obj_run.status == 'in_progress':
             obj_run.status = 'finished'
             obj_run.save()
-            return Response(status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "GET запрос обработан"}, status=status.HTTP_201_CREATED)
+        return Response({"message": "GET запрос не обработан"}, status=status.HTTP_400_BAD_REQUEST)
