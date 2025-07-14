@@ -39,4 +39,4 @@ class AthleteInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AthleteInfo
         fields = '__all__'
-        read_only_fields = ['user_id']
+        read_only_fields = ['athlete']
