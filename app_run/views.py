@@ -8,9 +8,9 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from app_run.models import Run
+from app_run.models import Run, AthleteInfo
 from app_run.pagination import RunPagination, UserPagination
-from app_run.serializer import RunSerializer, UserSerializer
+from app_run.serializer import RunSerializer, UserSerializer, AthleteInfoSerializer
 
 User = get_user_model()
 
@@ -30,7 +30,7 @@ class RunModelViewSet(viewsets.ModelViewSet):
     serializer_class = RunSerializer
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['athlete', 'status']
-    ordering_fields = ['created_at',]
+    ordering_fields = ['created_at', ]
     pagination_class = RunPagination
 
 
@@ -39,7 +39,7 @@ class UserReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserSerializer
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['first_name', 'last_name']
-    ordering_fields = ['date_joined',]
+    ordering_fields = ['date_joined', ]
     pagination_class = UserPagination
 
     def get_queryset(self):
@@ -72,3 +72,22 @@ class StopRunAPIView(APIView):
             obj_run.save()
             return Response({"text": 'Забег завершился'}, status=status.HTTP_200_OK)
         return Response({"text": 'Невозможно выполнить операцию'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AthleteInfoAPIView(APIView):
+    def get(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        if not user.is_superuser and not user.is_staff:
+            athl, crt = AthleteInfo.objects.get_or_create(user_id=user)
+            serialize = AthleteInfoSerializer(athl)
+            return Response(serialize.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        serrializer = AthleteInfoSerializer(data=request.data)
+        if serrializer.is_valid():
+            if not user.is_superuser and not user.is_staff and serrializer.data['weight'] < 900 and serrializer.data['weight'] > 0:
+                AthleteInfo.objects.update_or_create(user_id=user, defaults={'goals': serrializer.data['goals'], 'weight': serrializer.data['weight']})
+                return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
