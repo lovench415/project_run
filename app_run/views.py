@@ -79,7 +79,7 @@ class AthleteInfoAPIView(APIView):
         is_exst_usr = User.objects.filter(id=user_id).exists()
         # user = get_object_or_404(User, id=user_id)
         if not is_exst_usr:
-            Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_404_NOT_FOUND)
         user = User.objects.get(id=user_id)
         athl, crt = AthleteInfo.objects.get_or_create(athlete=user)
         serialize = AthleteInfoSerializer(athl)
