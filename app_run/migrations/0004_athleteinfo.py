@@ -16,9 +16,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='AthleteInfo',
             fields=[
-                ('goals', models.TextField()),
+                ('goals', models.TextField(default='')),
                 ('weight', models.PositiveSmallIntegerField(default=0)),
-                ('user_id', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
+                ('athlete', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]
