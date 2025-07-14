@@ -78,7 +78,7 @@ class AthleteInfoAPIView(APIView):
     def get(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
         if not user.is_superuser:
-            athl, crt = AthleteInfo.objects.get_or_create(athl=user)
+            athl, crt = AthleteInfo.objects.get_or_create(athlete=user)
             serialize = AthleteInfoSerializer(athl)
             return Response(serialize.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
