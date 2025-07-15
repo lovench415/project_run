@@ -12,12 +12,12 @@ class Run(models.Model):
     status = models.CharField(choices=STATUS_RUN, default='init')
 
 
-class AthleteInfo(models.Model):
-    goals = models.TextField(default='')
-    weight = models.PositiveSmallIntegerField(default=0)
-    athlete = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+# class AthleteInfo(models.Model):
+#     goals = models.TextField(default='')
+#     weight = models.PositiveSmallIntegerField(default=0)
+#     athlete = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
 
-class Challenge(models.Model):
-    full_name = models.TextField()
-    athlete = models.ForeignKey(User, on_delete=models.CASCADE)
+# class Challenge(models.Model):
+#     full_name = models.TextField()
+#     athlete = models.ForeignKey(User, on_delete=models.CASCADE)
