@@ -82,11 +82,7 @@ class StopRunAPIView(APIView):
 
 class AthleteInfoAPIView(APIView):
     def get(self, request, user_id):
-        is_exst_usr = User.objects.filter(id=user_id).exists()
-        # user = get_object_or_404(User, id=user_id)
-        # if not is_exst_usr:
-        #     return Response(status=status.HTTP_404_NOT_FOUND)
-        user = User.objects.get(id=user_id)
+        user = get_object_or_404(User, id=user_id)
         athl, crt = AthleteInfo.objects.get_or_create(athlete=user)
         serialize = AthleteInfoSerializer(athl)
         return Response(serialize.data, status=status.HTTP_200_OK)
