@@ -83,16 +83,16 @@ class StopRunAPIView(APIView):
 class AthleteInfoAPIView(APIView):
     def get(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
-        athl, crt = AthleteInfo.objects.get_or_create(athlete=user)
+        athl, crt = AthleteInfo.objects.get_or_create(athlete_id=user)
         serialize = AthleteInfoSerializer(athl)
         return Response(serialize.data, status=status.HTTP_200_OK)
 
     def put(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
-        serrializer = AthleteInfoSerializer(athlete=request.data)
+        serrializer = AthleteInfoSerializer(athlete_id=request.data)
         if serrializer.is_valid():
             if serrializer.data['weight'] < 900 and serrializer.data['weight'] > 0:
-                AthleteInfo.objects.update_or_create(athlete=user, defaults={'goals': serrializer.data['goals'],
+                AthleteInfo.objects.update_or_create(athlete_id=user, defaults={'goals': serrializer.data['goals'],
                                                                              'weight': serrializer.data['weight']})
                 return Response(status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
