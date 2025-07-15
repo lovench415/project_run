@@ -89,7 +89,7 @@ class AthleteInfoAPIView(APIView):
 
     def put(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
-        serrializer = AthleteInfoSerializer(athlete=request.data)
+        serrializer = AthleteInfoSerializer(data=request.data)
         if serrializer.is_valid():
             if serrializer.data['weight'] < 900 and serrializer.data['weight'] > 0:
                 AthleteInfo.objects.update_or_create(athlete=user, defaults={'goals': serrializer.data['goals'],
