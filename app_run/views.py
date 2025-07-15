@@ -8,9 +8,9 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from app_run.models import Run, AthleteInfo
+from app_run.models import Run, AthleteInfo, Challenge
 from app_run.pagination import RunPagination, UserPagination
-from app_run.serializer import RunSerializer, UserSerializer, AthleteInfoSerializer
+from app_run.serializer import RunSerializer, UserSerializer, AthleteInfoSerializer, ChallengeSerializer
 
 User = get_user_model()
 
@@ -56,7 +56,7 @@ class StartRunAPIView(APIView):
     def post(self, request, run_id):
         qs = Run.objects.select_related('athlete').all()
         obj_run = get_object_or_404(qs, id=run_id)
-        if obj_run.status == 'init':
+        if obj_run.status.lower() == 'init':
             obj_run.status = 'in_progress'
             obj_run.save()
             return Response({"text": 'Забег стартовал'}, status=status.HTTP_200_OK)
@@ -67,9 +67,15 @@ class StopRunAPIView(APIView):
     def post(self, request, run_id):
         qs = Run.objects.select_related('athlete').all()
         obj_run = get_object_or_404(qs, id=run_id)
-        if obj_run.status == 'in_progress':
+        if obj_run.status.lower() == 'in_progress':
             obj_run.status = 'finished'
             obj_run.save()
+
+            user_id = obj_run.athlete.id
+            count_runs = Run.objects.filter(athlete__id=user_id, status='finished').count()
+            if count_runs == 10:
+                Challenge.objects.create(athlete=obj_run.athlete, full_name='Сделай 10 Забегов!')
+
             return Response({"text": 'Забег завершился'}, status=status.HTTP_200_OK)
         return Response({"text": 'Невозможно выполнить операцию'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -90,6 +96,14 @@ class AthleteInfoAPIView(APIView):
         serrializer = AthleteInfoSerializer(athlete=request.data)
         if serrializer.is_valid():
             if serrializer.data['weight'] < 900 and serrializer.data['weight'] > 0:
-                AthleteInfo.objects.update_or_create(athlete=user, defaults={'goals': serrializer.data['goals'], 'weight': serrializer.data['weight']})
+                AthleteInfo.objects.update_or_create(athlete=user, defaults={'goals': serrializer.data['goals'],
+                                                                             'weight': serrializer.data['weight']})
                 return Response(status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChallengeUserReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Challenge.objects.all()
+    serializer_class = ChallengeSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['athlete']
