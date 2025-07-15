@@ -24,9 +24,10 @@ class RunSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField()
     runs_finished = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ['id', 'date_joined', 'username', 'last_name', 'first_name', 'type', 'runs_finished',]
+        fields = ['id', 'date_joined', 'username', 'last_name', 'first_name', 'type', 'runs_finished', ]
 
     def get_type(self, obj):
         return 'coach' if obj.is_staff else 'athlete'
@@ -35,12 +36,18 @@ class UserSerializer(serializers.ModelSerializer):
         return obj.run_set.filter(status='finished').count()
 
 
+class AthleteInfoUser(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id']
+
+
 class AthleteInfoSerializer(serializers.ModelSerializer):
+    athlete = AthleteInfoUser(read_only=True, source='user_id')
+
     class Meta:
         model = AthleteInfo
         fields = '__all__'
-        read_only_fields = ['athlete']
-
 
 # class ChallengeSerializer(serializers.ModelSerializer):
 #     class Meta:
