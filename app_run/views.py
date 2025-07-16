@@ -1,3 +1,5 @@
+import json
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
@@ -85,7 +87,8 @@ class AthleteInfoAPIView(APIView):
         user = get_object_or_404(User, id=user_id)
         athl, crt = AthleteInfo.objects.get_or_create(athlete=user)
         serialize = AthleteInfoSerializer(athl)
-        return Response(serialize.data, status=status.HTTP_200_OK)
+        data_us = {"user_id": user_id, "goals": serialize.data['goals'], "weight": serialize.data['weight']}
+        return Response(json.dumps(data_us), status=status.HTTP_200_OK)
 
     def put(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
