@@ -87,6 +87,8 @@ class AthleteInfoAPIView(APIView):
         user = get_object_or_404(User, id=user_id)
         athl, crt = AthleteInfo.objects.get_or_create(athlete=user)
         serialize = AthleteInfoSerializer(athl)
+        if serialize.data['weight'] == 0:
+            serialize.data['weight'] = ''
         data_us = {'user_id': user_id, 'goals': serialize.data['goals'], 'weight': serialize.data['weight']}
         return Response(data_us, status=status.HTTP_200_OK)
 
