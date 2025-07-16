@@ -18,6 +18,6 @@ class AthleteInfo(models.Model):
     athlete = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
 
-# class Challenge(models.Model):
-#     full_name = models.TextField()
-#     athlete = models.ForeignKey(User, on_delete=models.CASCADE)
+class Challenge(models.Model):
+    full_name = models.TextField()
+    athlete = models.ForeignKey(User, on_delete=models.CASCADE)

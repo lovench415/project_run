@@ -10,9 +10,9 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from app_run.models import Run, AthleteInfo
+from app_run.models import Run, AthleteInfo, Challenge
 from app_run.pagination import RunPagination, UserPagination
-from app_run.serializer import RunSerializer, UserSerializer, AthleteInfoSerializer
+from app_run.serializer import RunSerializer, UserSerializer, AthleteInfoSerializer, ChallengeSerializer
 
 User = get_user_model()
 
@@ -73,10 +73,10 @@ class StopRunAPIView(APIView):
             obj_run.status = 'finished'
             obj_run.save()
 
-            # user_id = obj_run.athlete.id
-            # count_runs = Run.objects.filter(athlete__id=user_id, status='finished').count()
-            # if count_runs == 10:
-            #     Challenge.objects.create(athlete=obj_run.athlete, full_name='Сделай 10 Забегов!')
+            user_id = obj_run.athlete.id
+            count_runs = Run.objects.filter(athlete__id=user_id, status='finished').count()
+            if count_runs == 10:
+                Challenge.objects.create(athlete=obj_run.athlete, full_name='Сделай 10 Забегов!')
 
             return Response({"text": 'Забег завершился'}, status=status.HTTP_200_OK)
         return Response({"text": 'Невозможно выполнить операцию'}, status=status.HTTP_400_BAD_REQUEST)
@@ -101,8 +101,8 @@ class AthleteInfoAPIView(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-# class ChallengeUserReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
-#     queryset = Challenge.objects.all()
-#     serializer_class = ChallengeSerializer
-#     filter_backends = [DjangoFilterBackend]
-#     filterset_fields = ['athlete']
+class ChallengeUserReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Challenge.objects.all()
+    serializer_class = ChallengeSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['athlete']
