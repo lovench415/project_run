@@ -97,10 +97,10 @@ class AthleteInfoAPIView(APIView):
         user = get_object_or_404(User, id=user_id)
         serrializer = AthleteInfoSerializer(data=request.data)
         if serrializer.is_valid():
-            if serrializer.data['weight'] < 900 and serrializer.data['weight'] > 0:
-                AthleteInfo.objects.update_or_create(athlete=user, defaults={'goals': serrializer.data['goals'],
-                                                                             'weight': serrializer.data['weight']})
-                return Response(status=status.HTTP_201_CREATED)
+            AthleteInfo.objects.update_or_create(athlete=user,
+                                                 defaults={'goals': serrializer.data['goals'],
+                                                           'weight': serrializer.data['weight']})
+            return Response(status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
