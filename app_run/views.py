@@ -101,8 +101,8 @@ class AthleteInfoAPIView(APIView):
             AthleteInfo.objects.update_or_create(athlete=user,
                                                  defaults={'goals': serrializer.data['goals'],
                                                            'weight': serrializer.data['weight']})
-            return JsonResponse(status=status.HTTP_201_CREATED)
-        return JsonResponse(status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({}, status=status.HTTP_201_CREATED)
+        return JsonResponse({}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'PUT'])
