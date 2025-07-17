@@ -10,6 +10,7 @@ class Run(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     comment = models.TextField()
     status = models.CharField(choices=STATUS_RUN, default='init')
+    distance = models.FloatField(default=0)
 
 
 class AthleteInfo(models.Model):

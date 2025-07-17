@@ -8,6 +8,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from geopy.distance import geodesic
 
 from app_run.models import Run, AthleteInfo, Challenge, Position
 from app_run.pagination import RunPagination, UserPagination
@@ -71,6 +72,12 @@ class StopRunAPIView(APIView):
         obj_run = get_object_or_404(qs, id=run_id)
         if obj_run.status.lower() == 'in_progress':
             obj_run.status = 'finished'
+
+            positions = Position.objects.select_related('run').filter(run_id=run_id)
+            coords_start = (positions[0].latitude, positions[0].longitude)
+            coords_end = (positions[-1].latitude, positions[-1].longitude)
+            distance = geodesic(coords_start, coords_end).km
+            obj_run.distance = distance
             obj_run.save()
 
             user_id = obj_run.athlete.id
@@ -78,7 +85,7 @@ class StopRunAPIView(APIView):
             if count_runs == 10:
                 Challenge.objects.create(athlete=obj_run.athlete, full_name='Сделай 10 Забегов!')
 
-            return Response({"text": 'Забег завершился'}, status=status.HTTP_200_OK)
+            return Response({"distance": distance}, status=status.HTTP_200_OK)
         return Response({"text": 'Невозможно выполнить операцию'}, status=status.HTTP_400_BAD_REQUEST)
 
 
