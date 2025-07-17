@@ -1,4 +1,5 @@
 import json
+from dis import Positions
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -11,9 +12,10 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from app_run.models import Run, AthleteInfo, Challenge
+from app_run.models import Run, AthleteInfo, Challenge, Position
 from app_run.pagination import RunPagination, UserPagination
-from app_run.serializer import RunSerializer, UserSerializer, AthleteInfoSerializer, ChallengeSerializer
+from app_run.serializer import RunSerializer, UserSerializer, AthleteInfoSerializer, ChallengeSerializer, \
+    PositionsSerializer
 
 User = get_user_model()
 
@@ -105,29 +107,15 @@ class AthleteInfoAPIView(APIView):
         return JsonResponse({}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT'])
-def athlete_info(request, user_id):
-    user = get_object_or_404(User, id=user_id)
-    if request.method == 'GET':
-        athl, crt = AthleteInfo.objects.get_or_create(athlete=user)
-        serializer = AthleteInfoSerializer(athl)
-        wgth = serializer.data['weight']
-        if int(serializer.data['weight']) == 0:
-            wgth = ''
-        data_us = {'user_id': user_id, 'goals': serializer.data['goals'], 'weight': wgth}
-        return JsonResponse(data_us)
-    else:
-        serrializer = AthleteInfoSerializer(data=request.data)
-        if serrializer.is_valid():
-            AthleteInfo.objects.update_or_create(athlete=user,
-                                                 defaults={'goals': serrializer.data['goals'],
-                                                           'weight': serrializer.data['weight']})
-            return JsonResponse(status=status.HTTP_201_CREATED)
-        return JsonResponse(status=status.HTTP_400_BAD_REQUEST)
-
-
 class ChallengeUserReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Challenge.objects.all()
     serializer_class = ChallengeSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['athlete']
+
+
+class PositionsModelViewSet(viewsets.ModelViewSet):
+    queryset = Position.objects.all()
+    serializer_class = PositionsSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['run']

@@ -1,7 +1,9 @@
+from dis import Positions
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-
-from app_run.models import Run, AthleteInfo, Challenge
+from rest_framework.generics import get_object_or_404
+from app_run.models import Run, AthleteInfo, Challenge, Position
 
 User = get_user_model()
 
@@ -60,3 +62,34 @@ class ChallengeSerializer(serializers.ModelSerializer):
         model = Challenge
         fields = '__all__'
         read_only_fields = ['athlete']
+
+
+class PositionsRunSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Run
+        fields = ["id"]
+
+
+class PositionsSerializer(serializers.ModelSerializer):
+    # run = PositionsRunSerializer()
+
+    class Meta:
+        model = Position
+        fields = '__all__'
+
+    def validate_latitude(self, value):
+        if value < -90.0000 or value > 90.0000:
+            raise serializers.ValidationError("Широта в не допустимом диапазоне")
+        return value
+
+    def validate_longitude(self, value):
+        if value < -180.0000 or value > 180.0000:
+            raise serializers.ValidationError("Долгота в не допустимом диапазоне")
+        return value
+
+    def validate_run(self, value):
+        run_obj = get_object_or_404(Run, id=value.id)
+        print('111111111111111')
+        if run_obj.status != 'in_progress':
+            raise serializers.ValidationError('Забег не должен быть завершенным или запущенным')
+        return value
