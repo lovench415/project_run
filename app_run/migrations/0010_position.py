@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Position',
             fields=[
-                ('run', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='app_run.run')),
+                ('run', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, serialize=False, to='app_run.run')),
                 ('latitude', models.DecimalField(decimal_places=4, max_digits=6)),
                 ('longitude', models.DecimalField(decimal_places=4, max_digits=7)),
             ],
