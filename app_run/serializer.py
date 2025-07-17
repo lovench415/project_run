@@ -50,7 +50,7 @@ class AthleteInfoSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate_weight(self, value):
-        if value < 0 or value > 900:
+        if value < 0 or value >= 900:
             raise serializers.ValidationError('Неправильный вес')
         return value
 
