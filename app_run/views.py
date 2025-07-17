@@ -105,6 +105,27 @@ class AthleteInfoAPIView(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET', 'PUT'])
+def athlete_info(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    if request.method == 'GET':
+        athl, crt = AthleteInfo.objects.get_or_create(athlete=user)
+        serializer = AthleteInfoSerializer(athl)
+        wgth = serializer.data['weight']
+        if int(serializer.data['weight']) == 0:
+            wgth = ''
+        data_us = {'user_id': user_id, 'goals': serializer.data['goals'], 'weight': wgth}
+        return JsonResponse(data_us)
+    else:
+        serrializer = AthleteInfoSerializer(data=request.data)
+        if serrializer.is_valid():
+            AthleteInfo.objects.update_or_create(athlete=user,
+                                                 defaults={'goals': serrializer.data['goals'],
+                                                           'weight': serrializer.data['weight']})
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 class ChallengeUserReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Challenge.objects.all()
     serializer_class = ChallengeSerializer
