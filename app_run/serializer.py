@@ -85,7 +85,7 @@ class PositionsSerializer(serializers.ModelSerializer):
     def validate_longitude(self, value):
         if value < -180.0000 or value > 180.0000:
             raise serializers.ValidationError("Долгота в не допустимом диапазоне")
-        elif len(str(value).split('.')) > 4:
+        elif len(str(value).split('.')[-1]) > 4:
             raise serializers.ValidationError('Количество знаков после запятой не должно превышать пяти символов.')
         return value
 
