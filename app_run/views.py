@@ -75,8 +75,9 @@ class StopRunAPIView(APIView):
 
             positions = Position.objects.select_related('run').filter(run_id=run_id)
             coords_start = (positions[0].latitude, positions[0].longitude)
-            coords_end = (positions[-1].latitude, positions[-1].longitude)
+            coords_end = (positions.last().latitude, positions.last().longitude)
             distance = geodesic(coords_start, coords_end).km
+
             obj_run.distance = distance
             obj_run.save()
 
