@@ -1,6 +1,3 @@
-import json
-from dis import Positions
-
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
@@ -12,9 +9,10 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from app_run.models import Run, AthleteInfo, Challenge
+from app_run.models import Run, AthleteInfo, Challenge, Position
 from app_run.pagination import RunPagination, UserPagination
-from app_run.serializer import RunSerializer, UserSerializer, AthleteInfoSerializer, ChallengeSerializer
+from app_run.serializer import RunSerializer, UserSerializer, AthleteInfoSerializer, ChallengeSerializer, \
+    PositionsSerializer
 
 User = get_user_model()
 
@@ -113,8 +111,8 @@ class ChallengeUserReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_fields = ['athlete']
 
 
-# class PositionsModelViewSet(viewsets.ModelViewSet):
-#     queryset = Position.objects.all()
-#     serializer_class = PositionsSerializer
-#     filter_backends = [DjangoFilterBackend]
-#     filterset_fields = ['run']
+class PositionsModelViewSet(viewsets.ModelViewSet):
+    queryset = Position.objects.all()
+    serializer_class = PositionsSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['run']
