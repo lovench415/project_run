@@ -3,7 +3,7 @@ from dis import Positions
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
-from app_run.models import Run, AthleteInfo, Challenge, Position
+from app_run.models import Run, AthleteInfo, Challenge
 
 User = get_user_model()
 
@@ -70,27 +70,27 @@ class PositionsRunSerializer(serializers.ModelSerializer):
         fields = ["id"]
 
 
-class PositionsSerializer(serializers.ModelSerializer):
-    # run = PositionsRunSerializer()
-
-    class Meta:
-        model = Position
-        fields = '__all__'
-
-    def validate_latitude(self, value):
-        if value < -90.0000 or value > 90.0000:
-            raise serializers.ValidationError("Широта в не допустимом диапазоне")
-        return value
-
-    def validate_longitude(self, value):
-        if value < -180.0000 or value > 180.0000:
-            raise serializers.ValidationError("Долгота в не допустимом диапазоне")
-        elif len(str(value).split('.')[-1]) > 4:
-            raise serializers.ValidationError('Количество знаков после запятой не должно превышать пяти символов.')
-        return value
-
-    def validate_run(self, value):
-        run_obj = get_object_or_404(Run, id=value.id)
-        if run_obj.status != 'in_progress':
-            raise serializers.ValidationError('Забег не должен быть завершенным или запущенным')
-        return value
+# class PositionsSerializer(serializers.ModelSerializer):
+#     # run = PositionsRunSerializer()
+#
+#     class Meta:
+#         model = Position
+#         fields = '__all__'
+#
+#     def validate_latitude(self, value):
+#         if value < -90.0000 or value > 90.0000:
+#             raise serializers.ValidationError("Широта в не допустимом диапазоне")
+#         return value
+#
+#     def validate_longitude(self, value):
+#         if value < -180.0000 or value > 180.0000:
+#             raise serializers.ValidationError("Долгота в не допустимом диапазоне")
+#         elif len(str(value).split('.')[-1]) > 4:
+#             raise serializers.ValidationError('Количество знаков после запятой не должно превышать пяти символов.')
+#         return value
+#
+#     def validate_run(self, value):
+#         run_obj = get_object_or_404(Run, id=value.id)
+#         if run_obj.status != 'in_progress':
+#             raise serializers.ValidationError('Забег не должен быть завершенным или запущенным')
+#         return value
