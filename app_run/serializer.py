@@ -85,11 +85,12 @@ class PositionsSerializer(serializers.ModelSerializer):
     def validate_longitude(self, value):
         if value < -180.0000 or value > 180.0000:
             raise serializers.ValidationError("Долгота в не допустимом диапазоне")
+        elif len(str(value).split('.')) > 4:
+            raise serializers.ValidationError('Количество знаков после запятой не должно превышать пяти символов.')
         return value
 
     def validate_run(self, value):
         run_obj = get_object_or_404(Run, id=value.id)
-        print('111111111111111')
         if run_obj.status != 'in_progress':
             raise serializers.ValidationError('Забег не должен быть завершенным или запущенным')
         return value
