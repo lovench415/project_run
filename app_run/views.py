@@ -92,7 +92,7 @@ class AthleteInfoAPIView(APIView):
         if int(serialize.data['weight']) == 0:
             wgth = ''
         data_us = {'user_id': user_id, 'goals': serialize.data['goals'], 'weight': wgth}
-        return JsonResponse(data_us, status=status.HTTP_200_OK)
+        return JsonResponse(data_us)
 
     def put(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
