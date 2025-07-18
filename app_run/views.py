@@ -86,7 +86,7 @@ class StopRunAPIView(APIView):
             if count_runs == 10:
                 Challenge.objects.create(athlete=obj_run.athlete, full_name='Сделай 10 Забегов!')
 
-            return Response({"distance": distance}, status=status.HTTP_200_OK)
+            return Response({"distance": distanc}, status=status.HTTP_200_OK)
         return Response({"text": 'Невозможно выполнить операцию'}, status=status.HTTP_400_BAD_REQUEST)
 
 
