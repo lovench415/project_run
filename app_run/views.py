@@ -73,11 +73,14 @@ class StopRunAPIView(APIView):
         if obj_run.status.lower() == 'in_progress':
             obj_run.status = 'finished'
 
-            positions = Position.objects.select_related('run').filter(run_id=run_id)
-            coords_start = (positions[0].latitude, positions[0].longitude)
-            coords_end = (positions.last().latitude, positions.last().longitude)
+            positions = Position.objects.select_related('run').filter(run_id=run_id).values()
+            print(positions)
+            coords_start = (float(positions[0]['latitude']), float(positions[0]['longitude']))
+            print(coords_start)
+            coords_end = (float(positions.last()['latitude']), float(positions.last()['longitude']))
+            print(coords_end)
             distanc = distance.distance(coords_start, coords_end).km
-
+            print(distanc)
             obj_run.distance = distanc
             obj_run.save()
 
