@@ -8,7 +8,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from geopy.distance import geodesic
+from geopy import distance
 
 from app_run.models import Run, AthleteInfo, Challenge, Position
 from app_run.pagination import RunPagination, UserPagination
@@ -76,9 +76,9 @@ class StopRunAPIView(APIView):
             positions = Position.objects.select_related('run').filter(run_id=run_id)
             coords_start = (positions[0].latitude, positions[0].longitude)
             coords_end = (positions.last().latitude, positions.last().longitude)
-            distance = geodesic(coords_start, coords_end).km
+            distanc = distance.distance(coords_start, coords_end).km
 
-            obj_run.distance = distance
+            obj_run.distance = distanc
             obj_run.save()
 
             user_id = obj_run.athlete.id
